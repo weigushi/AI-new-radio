@@ -7,7 +7,7 @@
     "episode": "node server/build-episode.mjs",
     "tts": "node server/build-audio.mjs",
     "start": "node server/server.mjs",
-    "build": "mkdir -p dist && cp -r public/* dist/"
+    "build": "rm -rf dist && mkdir -p dist && cp prototype/index.html dist/index.html && cp -r public/* dist/"
   },
   "dependencies": {
     "fish-audio": "^0.1.0"
