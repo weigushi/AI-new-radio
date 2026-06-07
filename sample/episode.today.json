@@ -1,0 +1,155 @@
+{
+  "id": "2026-06-06-evening",
+  "title": "今天值得听的三件事",
+  "date": "2026-06-06",
+  "duration_seconds": 156,
+  "domains": [
+    "ai",
+    "research",
+    "business",
+    "product"
+  ],
+  "opening": "今天这期电台只看一件事：AI 正在从聊天框，移动到具体工作流。今天的几条消息，不是孤立更新，而是在说明入口、成本和真实使用数据正在一起变化。",
+  "chapters": [
+    {
+      "id": "mainline",
+      "title": "今日主线：AI 正在进入工作流",
+      "type": "mainline",
+      "start_seconds": 0,
+      "duration_seconds": 35,
+      "script": "今日主线是：OpenAI 相关进展。第1条，OpenAI 将 Agent 能力进一步放进团队协作和知识库场景，强调跨工具执行任务。把这些信息合在一起看，关键不是谁又发布了一个功能，而是谁更接近用户每天真实开始工作的地方。",
+      "why_it_matters": "它指向 AI 产品从功能演示走向真实工作流。",
+      "sources": [
+        "https://example.com/openai-agent-workflow"
+      ],
+      "entities": [
+        "OpenAI",
+        "Agent",
+        "workflow"
+      ],
+      "watch_items": [
+        "OpenAI",
+        "Agent",
+        "workflow"
+      ],
+      "audio_url": "/audio/2026-06-06-evening/mainline.mp3"
+    },
+    {
+      "id": "briefs",
+      "title": "快讯组：三条值得保留的信号",
+      "type": "brief",
+      "start_seconds": 35,
+      "duration_seconds": 51,
+      "script": "1. DeepMind 相关进展。研究提出新的注意力优化方法，让长上下文任务的计算成本下降。它会改变哪些 AI 任务在经济上可行。2. AI coding agent 相关进展。该公司称企业客户的周活跃留存高于普通聊天型 AI 工具。它指向 AI 产品从功能演示走向真实工作流。3. AI reader 相关进展。产品能把多篇论文按问题演化关系组织起来，并生成可追溯笔记。它指向 AI 产品从功能演示走向真实工作流。",
+      "why_it_matters": "这些短消息共同说明，市场正在从能力崇拜转向使用证明。",
+      "sources": [
+        "https://example.com/deepmind-long-context",
+        "https://example.com/coding-agent-retention",
+        "https://example.com/inference-price-drop",
+        "https://example.com/research-reader",
+        "https://example.com/knowledge-base-agent"
+      ],
+      "entities": [
+        "DeepMind",
+        "long context",
+        "reasoning",
+        "AI coding agent",
+        "retention",
+        "enterprise",
+        "inference cost",
+        "automation",
+        "agent",
+        "AI reader",
+        "paper",
+        "knowledge workflow",
+        "knowledge base",
+        "meeting notes",
+        "workflow"
+      ],
+      "watch_items": [
+        "DeepMind",
+        "long context",
+        "reasoning",
+        "AI coding agent",
+        "retention"
+      ],
+      "audio_url": "/audio/2026-06-06-evening/briefs.mp3"
+    },
+    {
+      "id": "deep-dive",
+      "title": "深挖：为什么工作流比聊天框更重要",
+      "type": "deep_dive",
+      "start_seconds": 86,
+      "duration_seconds": 35,
+      "script": "今天值得多停一分钟的是：OpenAI 相关进展。第1条，OpenAI 将 Agent 能力进一步放进团队协作和知识库场景，强调跨工具执行任务。这件事的底层含义是，AI 产品的价值不再只由模型能力决定，而由它嵌入任务的深度决定。聊天框解决的是表达入口，工作流解决的是行动入口。",
+      "why_it_matters": "它指向 AI 产品从功能演示走向真实工作流。",
+      "sources": [
+        "https://example.com/openai-agent-workflow"
+      ],
+      "entities": [
+        "OpenAI",
+        "Agent",
+        "workflow"
+      ],
+      "watch_items": [
+        "OpenAI",
+        "Agent",
+        "workflow"
+      ],
+      "audio_url": "/audio/2026-06-06-evening/deep-dive.mp3"
+    },
+    {
+      "id": "watchlist",
+      "title": "观察清单",
+      "type": "watchlist",
+      "start_seconds": 121,
+      "duration_seconds": 35,
+      "script": "最后给出观察清单。第1，继续看 OpenAI。第2，继续看 Agent。第3，继续看 workflow。第4，继续看 DeepMind。第5，继续看 long context。这些对象会帮助我们判断，下一阶段 AI 产品竞争到底落在模型、入口，还是具体任务链上。",
+      "why_it_matters": "观察清单负责把一次性新闻变成后续判断线索。",
+      "sources": [
+        "https://example.com/openai-agent-workflow",
+        "https://example.com/deepmind-long-context",
+        "https://example.com/coding-agent-retention",
+        "https://example.com/inference-price-drop",
+        "https://example.com/research-reader",
+        "https://example.com/knowledge-base-agent",
+        "https://example.com/local-voice-agent"
+      ],
+      "entities": [
+        "OpenAI",
+        "Agent",
+        "workflow",
+        "DeepMind",
+        "long context",
+        "reasoning",
+        "AI coding agent",
+        "retention",
+        "enterprise",
+        "inference cost",
+        "automation",
+        "agent",
+        "AI reader",
+        "paper",
+        "knowledge workflow",
+        "knowledge base",
+        "meeting notes",
+        "voice agent",
+        "local model"
+      ],
+      "watch_items": [
+        "OpenAI",
+        "Agent",
+        "workflow",
+        "DeepMind",
+        "long context"
+      ],
+      "audio_url": "/audio/2026-06-06-evening/watchlist.mp3"
+    }
+  ],
+  "generated_from": {
+    "item_count": 8,
+    "cluster_count": 6,
+    "mode": "mock-radio-broadcast-v1"
+  },
+  "generated_audio_at": "2026-06-06T16:41:52.124Z"
+}

@@ -1,0 +1,14 @@
+{
+  "name": "guo-news-radio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "episode": "node server/build-episode.mjs",
+    "tts": "node server/build-audio.mjs",
+    "start": "node server/server.mjs"
+  },
+  "dependencies": {
+    "fish-audio": "^0.1.0"
+  }
+}

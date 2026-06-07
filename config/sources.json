@@ -1,0 +1,272 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "openai-blog",
+      "name": "OpenAI News",
+      "type": "rss",
+      "url": "https://openai.com/news/rss.xml",
+      "domains": ["ai", "product", "research", "policy"],
+      "quality": 0.95,
+      "enabled": true
+    },
+    {
+      "id": "google-deepmind",
+      "name": "Google DeepMind Blog",
+      "type": "rss",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "domains": ["ai", "research"],
+      "quality": 0.9,
+      "enabled": true
+    },
+    {
+      "id": "anthropic-news",
+      "name": "Anthropic News",
+      "type": "web",
+      "url": "https://www.anthropic.com/news",
+      "domains": ["ai", "product", "research", "policy"],
+      "quality": 0.9,
+      "enabled": true
+    },
+    {
+      "id": "google-research",
+      "name": "Google Research Blog",
+      "type": "rss",
+      "url": "https://research.google/blog/rss/",
+      "domains": ["ai", "research"],
+      "quality": 0.9,
+      "enabled": true
+    },
+    {
+      "id": "arxiv-cs-cl",
+      "name": "arXiv cs.CL",
+      "type": "api",
+      "url": "https://export.arxiv.org/api/query?search_query=cat:cs.CL&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending",
+      "domains": ["ai", "research", "nlp"],
+      "quality": 0.86,
+      "enabled": true
+    },
+    {
+      "id": "arxiv-cs-ai",
+      "name": "arXiv cs.AI",
+      "type": "api",
+      "url": "https://export.arxiv.org/api/query?search_query=cat:cs.AI&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending",
+      "domains": ["ai", "research"],
+      "quality": 0.86,
+      "enabled": true
+    },
+    {
+      "id": "arxiv-cs-lg",
+      "name": "arXiv cs.LG",
+      "type": "api",
+      "url": "https://export.arxiv.org/api/query?search_query=cat:cs.LG&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending",
+      "domains": ["ai", "research", "machine_learning"],
+      "quality": 0.86,
+      "enabled": true
+    },
+    {
+      "id": "arxiv-cs-cv",
+      "name": "arXiv cs.CV",
+      "type": "api",
+      "url": "https://export.arxiv.org/api/query?search_query=cat:cs.CV&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending",
+      "domains": ["ai", "research", "computer_vision"],
+      "quality": 0.84,
+      "enabled": true
+    },
+    {
+      "id": "huggingface-hub-models",
+      "name": "Hugging Face Hub Models",
+      "type": "api",
+      "url": "https://huggingface.co/api/models?sort=lastModified&direction=-1&limit=50",
+      "domains": ["ai", "open_source", "developer"],
+      "quality": 0.74,
+      "enabled": false,
+      "notes": "High-volume discovery source. Enable after filters for model family, likes, downloads, and task are implemented."
+    },
+    {
+      "id": "github-ai-repo-search",
+      "name": "GitHub Repository Search for AI Projects",
+      "type": "api",
+      "url": "https://api.github.com/search/repositories?q=topic:artificial-intelligence+stars:%3E500&sort=updated&order=desc",
+      "domains": ["ai", "open_source", "developer"],
+      "quality": 0.74,
+      "enabled": false,
+      "requires_env": ["GITHUB_TOKEN"],
+      "notes": "Use as a discovery source; GitHub search is noisy without query curation."
+    },
+    {
+      "id": "github-tracked-releases",
+      "name": "GitHub Releases for Tracked AI Repos",
+      "type": "api",
+      "url": "https://api.github.com/repos/{owner}/{repo}/releases",
+      "domains": ["ai", "open_source", "developer"],
+      "quality": 0.8,
+      "enabled": false,
+      "requires_env": ["GITHUB_TOKEN"],
+      "repositories": [
+        "huggingface/transformers",
+        "pytorch/pytorch",
+        "vllm-project/vllm",
+        "ggml-org/llama.cpp",
+        "ollama/ollama",
+        "langchain-ai/langchain",
+        "run-llama/llama_index",
+        "microsoft/autogen",
+        "openai/openai-python",
+        "anthropics/anthropic-sdk-python"
+      ]
+    },
+    {
+      "id": "hacker-news",
+      "name": "Hacker News RSS",
+      "type": "rss",
+      "url": "https://news.ycombinator.com/rss",
+      "domains": ["tech", "startup"],
+      "quality": 0.7,
+      "enabled": true
+    },
+    {
+      "id": "hacker-news-api-top",
+      "name": "Hacker News API Top Stories",
+      "type": "api",
+      "url": "https://hacker-news.firebaseio.com/v0/topstories.json",
+      "domains": ["tech", "startup", "developer"],
+      "quality": 0.72,
+      "enabled": false,
+      "notes": "Pair story IDs with /v0/item/{id}.json during ingestion."
+    },
+    {
+      "id": "hacker-news-api-new",
+      "name": "Hacker News API New Stories",
+      "type": "api",
+      "url": "https://hacker-news.firebaseio.com/v0/newstories.json",
+      "domains": ["tech", "startup", "developer"],
+      "quality": 0.66,
+      "enabled": false,
+      "notes": "Use only with strict AI, product, and finance keyword filters."
+    },
+    {
+      "id": "product-hunt-api",
+      "name": "Product Hunt API",
+      "type": "api",
+      "url": "https://api.producthunt.com/v2/api/graphql",
+      "domains": ["product", "startup"],
+      "quality": 0.66,
+      "enabled": false,
+      "requires_env": ["PRODUCT_HUNT_TOKEN"],
+      "notes": "GraphQL API. Use latest posts and AI/product topics, then heavily demote pure launch PR."
+    },
+    {
+      "id": "reddit-ai-subreddits",
+      "name": "Reddit AI Subreddits",
+      "type": "api",
+      "url": "https://oauth.reddit.com/r/{subreddit}/new",
+      "domains": ["ai", "research", "community"],
+      "quality": 0.58,
+      "enabled": false,
+      "requires_env": ["REDDIT_CLIENT_ID", "REDDIT_CLIENT_SECRET", "REDDIT_USER_AGENT"],
+      "subreddits": ["LocalLLaMA", "MachineLearning", "OpenAI", "ClaudeAI"],
+      "notes": "Official Reddit API source. Keep disabled until OAuth and noise filters are implemented."
+    },
+    {
+      "id": "techcrunch-ai",
+      "name": "TechCrunch AI",
+      "type": "rss",
+      "url": "https://techcrunch.com/tag/artificial-intelligence/feed/",
+      "domains": ["ai", "startup", "business"],
+      "quality": 0.76,
+      "enabled": true
+    },
+    {
+      "id": "mit-news-ai",
+      "name": "MIT News Artificial Intelligence",
+      "type": "rss",
+      "url": "https://news.mit.edu/rss/topic/artificial-intelligence2",
+      "domains": ["ai", "research"],
+      "quality": 0.84,
+      "enabled": true
+    },
+    {
+      "id": "venturebeat-ai",
+      "name": "VentureBeat AI",
+      "type": "rss",
+      "url": "https://venturebeat.com/category/ai/feed/",
+      "domains": ["ai", "business", "product"],
+      "quality": 0.74,
+      "enabled": true
+    },
+    {
+      "id": "gdelt-ai-news",
+      "name": "GDELT AI News Search",
+      "type": "api",
+      "url": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22artificial%20intelligence%22&mode=artlist&format=json&maxrecords=50",
+      "domains": ["ai", "world", "policy", "market"],
+      "quality": 0.72,
+      "enabled": false,
+      "notes": "Public but rate-limited. Add request backoff and query curation before enabling."
+    },
+    {
+      "id": "sec-edgar-company-submissions",
+      "name": "SEC EDGAR Company Submissions",
+      "type": "api",
+      "url": "https://data.sec.gov/submissions/CIK{cik}.json",
+      "domains": ["business", "finance", "market"],
+      "quality": 0.92,
+      "enabled": false,
+      "requires_env": ["SEC_USER_AGENT"],
+      "notes": "Primary-source filings. Requires tracked CIKs and a compliant User-Agent."
+    },
+    {
+      "id": "finnhub-company-news",
+      "name": "Finnhub Company News",
+      "type": "api",
+      "url": "https://finnhub.io/api/v1/company-news?symbol={symbol}&from={from}&to={to}",
+      "domains": ["business", "finance", "market"],
+      "quality": 0.78,
+      "enabled": false,
+      "requires_env": ["FINNHUB_API_KEY"],
+      "notes": "Use for ticker-specific market news after tracked symbols are configured."
+    },
+    {
+      "id": "newsapi-ai",
+      "name": "NewsAPI AI Search",
+      "type": "api",
+      "url": "https://newsapi.org/v2/everything?q=AI%20OR%20artificial%20intelligence&language=en&sortBy=publishedAt&pageSize=100",
+      "domains": ["ai", "business", "world"],
+      "quality": 0.7,
+      "enabled": false,
+      "requires_env": ["NEWSAPI_API_KEY"],
+      "notes": "Alternative broad news provider. Choose this or Benzinga for general news enrichment."
+    },
+    {
+      "id": "benzinga-news",
+      "name": "Benzinga News API",
+      "type": "api",
+      "url": "https://api.benzinga.com/api/v2/news",
+      "domains": ["business", "finance", "market"],
+      "quality": 0.82,
+      "enabled": false,
+      "requires_env": ["BENZINGA_API_KEY"],
+      "notes": "Alternative market-news provider. Choose this or NewsAPI based on budget and ticker coverage."
+    },
+    {
+      "id": "company-ir-rss",
+      "name": "Tracked Company IR RSS Feeds",
+      "type": "rss",
+      "url": "https://example.com/company-ir-feed.xml",
+      "domains": ["business", "finance", "market"],
+      "quality": 0.9,
+      "enabled": false,
+      "notes": "Template entry. Replace with per-company investor-relations RSS URLs for tracked public companies."
+    },
+    {
+      "id": "stratechery",
+      "name": "Stratechery",
+      "type": "rss",
+      "url": "https://stratechery.com/feed/",
+      "domains": ["business", "strategy"],
+      "quality": 0.9,
+      "enabled": false
+    }
+  ]
+}

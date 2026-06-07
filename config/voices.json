@@ -1,0 +1,20 @@
+{
+  "default_voice_id": "jialan-3",
+  "fallback_voice": {
+    "id": "fallback-narration",
+    "label": "中文旁白",
+    "reference_id": "59cb5986671546eaa6ca8ae6f29f6d22"
+  },
+  "voices": [
+    {
+      "id": "jialan-3",
+      "label": "嘉岚3.0",
+      "reference_id": "fbe02f8306fc4d3d915e9871722a39d5"
+    },
+    {
+      "id": "young-male",
+      "label": "活力青年男声",
+      "reference_id": "5fb3bcfa07ce4164baeb35127e99314f"
+    }
+  ]
+}

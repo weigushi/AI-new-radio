@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guo News Radio</title>
+  <style>
+    :root {
+      --bg: #05070c;
+      --bg-2: #0a1020;
+      --ink: #10131a;
+      --panel: #0c1224;
+      --panel-2: #111a33;
+      --card: #f8fbff;
+      --card-soft: #edf4ff;
+      --line: rgba(107, 190, 255, 0.28);
+      --text: #f3f8ff;
+      --muted: #8ea1b8;
+      --blue: #37c9ff;
+      --blue-2: #7df1ff;
+      --pink: #ff6bd6;
+      --yellow: #f8dc73;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Courier New", "SimSun", "Microsoft YaHei", monospace;
+      letter-spacing: 0;
+      background:
+        radial-gradient(circle at 1px 1px, rgba(55, 201, 255, 0.20) 1px, transparent 0) 0 0 / 18px 18px,
+        radial-gradient(circle at 65% 15%, rgba(255, 107, 214, 0.16), transparent 28%),
+        radial-gradient(circle at 25% 80%, rgba(55, 201, 255, 0.18), transparent 30%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+      image-rendering: pixelated;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.18;
+      background:
+        repeating-linear-gradient(0deg, transparent 0 2px, rgba(255, 255, 255, 0.04) 2px 3px),
+        repeating-linear-gradient(90deg, transparent 0 3px, rgba(55, 201, 255, 0.035) 3px 4px);
+      mix-blend-mode: screen;
+    }
+
+    button, input, select { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 28px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(5, 8, 17, 0.78);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 18px;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(55, 201, 255, 0.65);
+      white-space: nowrap;
+    }
+
+    .live-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      background: var(--blue);
+      box-shadow: 0 0 0 3px rgba(55, 201, 255, 0.18), 0 0 18px var(--blue), 0 0 32px var(--blue);
+      animation: blink 1.2s steps(2, end) infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.35; }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .icon-button,
+    .text-button,
+    .voice-select,
+    .ask-input {
+      border: 1px solid var(--line);
+      background: rgba(8, 14, 28, 0.92);
+      color: var(--text);
+      border-radius: 999px;
+    }
+
+    .icon-button,
+    .text-button {
+      cursor: pointer;
+    }
+
+    .icon-button {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+    }
+
+    .text-button {
+      min-height: 38px;
+      padding: 0 14px;
+      color: var(--text);
+    }
+
+    .text-button:disabled,
+    .ask-input:disabled {
+      cursor: wait;
+      opacity: 0.6;
+    }
+
+    .text-button:hover:not(:disabled),
+    .icon-button:hover,
+    .voice-select:hover {
+      border-color: var(--blue);
+      box-shadow: 0 0 16px rgba(55, 201, 255, 0.3);
+    }
+
+    .voice-select {
+      min-height: 38px;
+      padding: 0 12px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      padding: 30px;
+    }
+
+    .radio {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .player-window {
+      background: var(--card);
+      color: var(--ink);
+      border: 2px solid #ffffff;
+      border-radius: 8px;
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+      box-shadow: 0 0 0 1px rgba(55, 201, 255, 0.55), 0 28px 80px rgba(0, 0, 0, 0.45), 0 0 36px rgba(55, 201, 255, 0.18);
+    }
+
+    .episode-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      color: #4d5c70;
+      font-size: 12px;
+    }
+
+    .signal-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #005c7a;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .signal-chip::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: var(--blue);
+      box-shadow: 0 0 12px var(--blue);
+      animation: blink 1.2s steps(2, end) infinite;
+    }
+
+    h1 {
+      margin: 7px 0 0;
+      font-size: 30px;
+      line-height: 1.18;
+      color: var(--ink);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: #0c1224;
+      color: var(--blue-2);
+      font-size: 12px;
+      border: 1px solid rgba(55, 201, 255, 0.38);
+      box-shadow: inset 0 0 12px rgba(55, 201, 255, 0.16);
+    }
+
+    .chapter-title {
+      color: #005c7a;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .now-line {
+      font-size: 18px;
+      line-height: 1.5;
+      color: #202733;
+      font-weight: 700;
+    }
+
+    .waveform {
+      height: 104px;
+      display: grid;
+      grid-template-columns: repeat(36, 1fr);
+      align-items: center;
+      gap: 4px;
+      padding: 14px;
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(4, 9, 20, 0.95), rgba(8, 16, 32, 0.95)),
+        radial-gradient(circle at 1px 1px, rgba(125, 241, 255, 0.22) 1px, transparent 0) 0 0 / 12px 12px;
+      border: 1px solid rgba(55, 201, 255, 0.45);
+      overflow: hidden;
+    }
+
+    .bar {
+      min-width: 3px;
+      height: calc(var(--level) * 1%);
+      border-radius: 3px;
+      background: linear-gradient(180deg, var(--blue-2), var(--blue));
+      box-shadow: 0 0 10px rgba(55, 201, 255, 0.9);
+      opacity: 0.78;
+      transform-origin: center;
+      transition: height 120ms linear, opacity 120ms linear;
+    }
+
+    .waveform.idle .bar {
+      opacity: 0.42;
+    }
+
+    .subtitle-box {
+      height: 300px;
+      border: 1px solid rgba(55, 201, 255, 0.38);
+      background: #07101f;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: inset 0 0 24px rgba(55, 201, 255, 0.12);
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto auto;
+      gap: 12px;
+    }
+
+    .subtitle-scroll {
+      display: grid;
+      gap: 12px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      padding-right: 6px;
+      min-height: 0;
+    }
+
+    .subtitle-line {
+      color: #87a7c7;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .subtitle-line.active {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(55, 201, 255, 0.75);
+      font-size: 18px;
+    }
+
+    .transcript-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(55, 201, 255, 0.55), transparent);
+      margin: 4px 0;
+    }
+
+    .transcript-message {
+      display: block;
+      padding: 2px 0;
+      color: #dcecff;
+      line-height: 1.65;
+      font-size: 15px;
+    }
+
+    .transcript-message.user {
+      color: #ffffff;
+    }
+
+    .transcript-message.assistant {
+      color: #dcecff;
+    }
+
+    .transcript-meta {
+      display: inline;
+      margin-right: 8px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .transcript-meta span:last-child { display: none; }
+
+    .transcript-meta::after {
+      content: ":";
+      color: var(--muted);
+      margin-left: 2px;
+    }
+
+    .transcript-message > div:not(.transcript-meta) {
+      display: inline;
+    }
+
+    .transcript-message.user .transcript-meta span:first-child {
+      color: var(--blue-2);
+    }
+
+    .transcript-message.assistant .transcript-meta span:first-child {
+      color: var(--yellow);
+    }
+
+    .transcript-speaker.user { color: var(--blue-2); }
+
+    .transcript-speaker.assistant { color: var(--yellow); }
+
+    .transcript-text { color: #dcecff; }
+
+    .transcript-time { display: none; }
+
+    .message-play {
+      margin-top: 8px;
+      min-height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--blue-2);
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .live-ask-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      border-top: 1px solid rgba(55, 201, 255, 0.24);
+      padding-top: 12px;
+    }
+
+    .live-status {
+      min-height: 18px;
+      color: var(--blue-2);
+      font-size: 12px;
+    }
+
+    .transport {
+      display: grid;
+      gap: 12px;
+    }
+
+    .progress {
+      display: none;
+      height: 6px;
+      background: #d6e0ec;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--pink));
+    }
+
+    .time-row {
+      display: none;
+      justify-content: space-between;
+      color: #4d5c70;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-window .icon-button {
+      display: none;
+      background: #eef5ff;
+      color: var(--ink);
+      border-color: #cfd9e7;
+    }
+
+    .play-button {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: #0b1020;
+      color: var(--blue-2);
+      border: 1px solid rgba(55, 201, 255, 0.7);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(55, 201, 255, 0.35);
+    }
+
+    .chapters {
+      display: none;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .chapter,
+    .details {
+      border: 1px solid var(--line);
+      background: rgba(9, 15, 30, 0.86);
+      border-radius: 8px;
+      box-shadow: inset 0 0 20px rgba(55, 201, 255, 0.05);
+    }
+
+    .chapter {
+      color: var(--muted);
+      min-height: 82px;
+      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .chapter.active {
+      color: var(--text);
+      border-color: var(--blue);
+      box-shadow: 0 0 18px rgba(55, 201, 255, 0.22);
+    }
+
+    .chapter strong {
+      display: block;
+      line-height: 1.35;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .chapter span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .ask-panel {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .ask-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .ask-input {
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 999px;
+    }
+
+    .ask-status {
+      min-height: 22px;
+      color: var(--blue-2);
+      font-size: 13px;
+    }
+
+    .reply-text {
+      display: none;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      color: #d9ecff;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .reply-text.open {
+      display: block;
+    }
+
+    .conversation-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    .conversation {
+      display: grid;
+      gap: 10px;
+      max-height: 300px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .message {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #07101f;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .message.user {
+      border-color: rgba(55, 201, 255, 0.62);
+      color: var(--text);
+    }
+
+    .message.assistant {
+      background: #101a33;
+      color: #dcecff;
+    }
+
+    .message-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .details {
+      display: none;
+      padding: 18px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .details.open { display: grid; }
+
+    .detail-section h2 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      color: var(--blue-2);
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .detail-list a {
+      color: var(--blue-2);
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+
+    audio { display: none; }
+
+    @media (max-width: 760px) {
+      header { padding: 12px 16px; }
+      main { padding: 16px; }
+      h1 { font-size: 23px; }
+      .player-window { padding: 16px; }
+      .subtitle-box { height: 280px; }
+      .subtitle-line { font-size: 15px; }
+      .subtitle-line.active { font-size: 17px; }
+      .chapters, .details, .live-ask-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand"><span class="live-dot"></span>Guo News Radio</div>
+      <div class="header-actions">
+        <select class="voice-select" id="voice-select" aria-label="选择主播音色"></select>
+        <button class="text-button" id="details-toggle">详情</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="radio">
+        <section class="player-window">
+          <div class="episode-meta">
+            <div>
+              <div class="signal-chip">live ai station</div>
+              <h1 id="episode-title">加载中</h1>
+            </div>
+            <div>
+              <div id="episode-date">今日节目</div>
+              <div id="episode-duration">--:--</div>
+            </div>
+          </div>
+
+          <div class="tag-row" id="genre-tags"></div>
+
+          <div>
+            <div class="chapter-title" id="chapter-label">当前章节</div>
+            <div class="now-line" id="now-line">正在准备播报文本。</div>
+          </div>
+
+          <div class="waveform idle" id="waveform" aria-label="音频波形可视化"></div>
+
+          <div class="subtitle-box" aria-label="字幕转录面板">
+            <div class="subtitle-scroll" id="subtitle-scroll"></div>
+            <div class="live-ask-row">
+              <input class="ask-input" id="ask-input" placeholder="问电台主播：今天有什么新闻？" autocomplete="off">
+              <button class="text-button" id="ask-button">发送</button>
+            </div>
+            <div class="live-status" id="ask-status">文本提问已就绪，主播会在这里滚动回答。</div>
+          </div>
+
+          <div class="transport">
+            <div class="progress" aria-label="播放进度"><span id="progress-bar"></span></div>
+            <div class="time-row">
+              <span id="current-time">00:00</span>
+              <span id="total-time">00:00</span>
+            </div>
+            <div class="controls">
+              <button class="icon-button" id="prev-button" title="上一章">⏮</button>
+              <button class="play-button" id="play-button" title="播放">▶</button>
+              <button class="icon-button" id="next-button" title="下一章">⏭</button>
+            </div>
+          </div>
+
+          <audio id="audio-player" preload="metadata"></audio>
+          <audio id="reply-audio" preload="metadata"></audio>
+        </section>
+
+        <section class="chapters" id="chapters"></section>
+
+        <template id="removed-ask-panel">
+          <div class="ask-row">
+            <input class="ask-input" id="ask-input" placeholder="问电台主播：今天有什么新闻？" autocomplete="off">
+            <button class="text-button" id="ask-button">发送</button>
+          </div>
+          <div class="ask-status" id="ask-status">文本提问版已就绪，主播会先流式显示文字，再生成语音。</div>
+          <div class="reply-text" id="reply-text"></div>
+          <div class="conversation-head">
+            <span>会话记录</span>
+            <button class="text-button" id="clear-chat-button">清空</button>
+          </div>
+          <div class="conversation" id="conversation"></div>
+        </template>
+
+        <section class="details" id="details-panel">
+          <div class="detail-section">
+            <h2>价值判断</h2>
+            <div class="detail-list" id="detail-why"></div>
+          </div>
+          <div class="detail-section">
+            <h2>观察清单</h2>
+            <div class="detail-list" id="detail-watch"></div>
+          </div>
+          <div class="detail-section">
+            <h2>来源</h2>
+            <div class="detail-list" id="detail-sources"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const audio = document.querySelector("#audio-player");
+    const replyAudio = document.querySelector("#reply-audio");
+    const playButton = document.querySelector("#play-button");
+    const prevButton = document.querySelector("#prev-button");
+    const nextButton = document.querySelector("#next-button");
+    const titleEl = document.querySelector("#episode-title");
+    const dateEl = document.querySelector("#episode-date");
+    const durationEl = document.querySelector("#episode-duration");
+    const chapterLabel = document.querySelector("#chapter-label");
+    const nowLine = document.querySelector("#now-line");
+    const subtitleScroll = document.querySelector("#subtitle-scroll");
+    const progressBar = document.querySelector("#progress-bar");
+    const currentTimeEl = document.querySelector("#current-time");
+    const totalTimeEl = document.querySelector("#total-time");
+    const chaptersEl = document.querySelector("#chapters");
+    const detailsToggle = document.querySelector("#details-toggle");
+    const detailsPanel = document.querySelector("#details-panel");
+    const detailWhy = document.querySelector("#detail-why");
+    const detailWatch = document.querySelector("#detail-watch");
+    const detailSources = document.querySelector("#detail-sources");
+    const voiceSelect = document.querySelector("#voice-select");
+    const askInput = document.querySelector("#ask-input");
+    const askButton = document.querySelector("#ask-button");
+    const askStatus = document.querySelector("#ask-status");
+    const clearChatButton = { addEventListener() {} };
+    const replyText = { classList: { remove() {} } };
+    const waveform = document.querySelector("#waveform");
+    const genreTags = document.querySelector("#genre-tags");
+
+    let episode = null;
+    let currentChapterIndex = 0;
+    let subtitleLines = [];
+    let conversation = [];
+    let waveTimer = null;
+    const conversationKey = "guo-news-radio.conversation.v1";
+    const draftKey = "guo-news-radio.ask-draft.v1";
+
+    function formatTime(seconds) {
+      if (!Number.isFinite(seconds)) return "00:00";
+      const whole = Math.max(0, Math.floor(seconds));
+      const minutes = String(Math.floor(whole / 60)).padStart(2, "0");
+      const rest = String(whole % 60).padStart(2, "0");
+      return `${minutes}:${rest}`;
+    }
+
+    function splitScript(text) {
+      return String(text || "")
+        .replace(/\s+/g, "")
+        .split(/(?<=[。！？；])/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+    }
+
+    function audioUrl(chapter) {
+      const url = chapter.audio_url || `/audio/${episode.id}/${chapter.id}.mp3`;
+      const version = encodeURIComponent(episode.generated_audio_at || Date.now());
+      return `${url}${url.includes("?") ? "&" : "?"}v=${version}`;
+    }
+
+    function audioVersionLabel() {
+      if (!episode.generated_audio_at) return "待生成音频";
+      const date = new Date(episode.generated_audio_at);
+      return `音频 ${date.toLocaleString("zh-CN", { hour12: false })}`;
+    }
+
+    function safeJsonParse(value, fallback) {
+      try {
+        return value ? JSON.parse(value) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function saveConversation() {
+      localStorage.setItem(conversationKey, JSON.stringify(conversation.slice(-30)));
+    }
+
+    function messageTime(value) {
+      return new Date(value).toLocaleTimeString("zh-CN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+    }
+
+    function renderLiveTranscript({ stickToBottom = false } = {}) {
+      const activeIndex = activeSubtitleIndex();
+      const episodeHtml = subtitleLines
+        .map((line, index) => `<div class="subtitle-line${index === activeIndex ? " active" : ""}" data-index="${index}">${escapeHtml(line)}</div>`)
+        .join("");
+      const conversationHtml = conversation.map((message) => `
+        <div class="transcript-message ${message.role}" data-message-id="${message.id}">
+          <div class="transcript-meta">
+            <span>${message.role === "user" ? "你" : message.voice_label || "电台主播"}</span>
+            <span>${messageTime(message.at)}</span>
+          </div>
+          <div>${escapeHtml(message.text || "正在回答...")}</div>
+          ${message.audio_url ? `<button class="message-play" data-audio="${escapeHtml(message.audio_url)}" data-version="${escapeHtml(message.generated_audio_at || "")}">重播回答</button>` : ""}
+        </div>
+      `).join("");
+
+      subtitleScroll.innerHTML = [
+        episodeHtml,
+        conversationHtml ? `<div class="transcript-divider"></div>${conversationHtml}` : ""
+      ].filter(Boolean).join("");
+
+      subtitleScroll.querySelectorAll(".message-play").forEach((button) => {
+        button.addEventListener("click", async () => {
+          audio.pause();
+          replyAudio.src = `${button.dataset.audio}?v=${encodeURIComponent(button.dataset.version || Date.now())}`;
+          replyAudio.load();
+          await replyAudio.play();
+        });
+      });
+
+      if (stickToBottom) {
+        requestAnimationFrame(() => {
+          subtitleScroll.scrollTop = subtitleScroll.scrollHeight;
+        });
+      }
+    }
+
+    function renderConversation() {
+      renderLiveTranscript({ stickToBottom: true });
+      return;
+      conversationEl.innerHTML = conversation.map((message) => `
+        <div class="message ${message.role}">
+          <div class="message-meta">
+            <span>${message.role === "user" ? "你" : message.voice_label || "电台主播"}</span>
+            <span>${messageTime(message.at)}</span>
+          </div>
+          <div>${message.text || "正在回答..."}</div>
+          ${message.audio_url ? `<button class="message-play" data-audio="${message.audio_url}" data-version="${message.generated_audio_at || ""}">重播回答</button>` : ""}
+        </div>
+      `).join("");
+
+      conversationEl.querySelectorAll(".message-play").forEach((button) => {
+        button.addEventListener("click", async () => {
+          audio.pause();
+          replyAudio.src = `${button.dataset.audio}?v=${encodeURIComponent(button.dataset.version || Date.now())}`;
+          replyAudio.load();
+          await replyAudio.play();
+        });
+      });
+
+      conversationEl.scrollTop = conversationEl.scrollHeight;
+    }
+
+    function restoreConversation() {
+      conversation = safeJsonParse(localStorage.getItem(conversationKey), []);
+      askInput.value = localStorage.getItem(draftKey) || "";
+      renderConversation();
+    }
+
+    function pushMessage(message) {
+      conversation.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+        at: new Date().toISOString(),
+        ...message
+      });
+      saveConversation();
+      renderConversation();
+      return conversation[conversation.length - 1];
+    }
+
+    function updateStoredMessage(id, patch) {
+      const message = conversation.find((item) => item.id === id);
+      if (!message) return null;
+      Object.assign(message, patch);
+      saveConversation();
+      renderConversation();
+      return message;
+    }
+
+    async function parseSseChunk(buffer, onEvent) {
+      const parts = buffer.split("\n\n");
+      const rest = parts.pop() || "";
+      for (const part of parts) {
+        const lines = part.split(/\r?\n/);
+        const eventLine = lines.find((line) => line.startsWith("event:"));
+        const dataLines = lines.filter((line) => line.startsWith("data:"));
+        const event = eventLine ? eventLine.slice(6).trim() : "message";
+        const data = dataLines.map((line) => line.slice(5).trim()).join("\n");
+        if (data) await onEvent(event, JSON.parse(data));
+      }
+      return rest;
+    }
+
+    function setupWaveform() {
+      waveform.innerHTML = Array.from({ length: 36 }, (_, index) => {
+        const level = 16 + ((index * 17) % 62);
+        return `<span class="bar" style="--level:${level}"></span>`;
+      }).join("");
+    }
+
+    function setWaveActive(active) {
+      waveform.classList.toggle("idle", !active);
+      clearInterval(waveTimer);
+      if (!active) return;
+      waveTimer = setInterval(() => {
+        waveform.querySelectorAll(".bar").forEach((bar, index) => {
+          const time = Date.now() / 180;
+          const level = 18 + Math.abs(Math.sin(time + index * 0.55)) * 74;
+          bar.style.setProperty("--level", level.toFixed(0));
+        });
+      }, 110);
+    }
+
+    async function loadVoices() {
+      const data = await fetch("/api/voices", { cache: "no-store" }).then((response) => response.json());
+      voiceSelect.innerHTML = data.voices
+        .map((voice) => `<option value="${voice.id}"${voice.id === data.default_voice_id ? " selected" : ""}>${voice.label}</option>`)
+        .join("");
+    }
+
+    function renderTags() {
+      const labels = [
+        ...(episode.domains || []),
+        "AI 电台",
+        "流式问答",
+        "像素信号"
+      ];
+      genreTags.innerHTML = [...new Set(labels)].slice(0, 7)
+        .map((tag) => `<span class="tag">${tag}</span>`)
+        .join("");
+    }
+
+    function renderSubtitles(chapter) {
+      subtitleLines = splitScript(chapter.script);
+      renderLiveTranscript();
+      subtitleScroll.scrollTop = 0;
+      nowLine.textContent = subtitleLines[0] || chapter.script || chapter.title;
+    }
+
+    function activeSubtitleIndex() {
+      if (!subtitleLines.length) return 0;
+      const duration = audio.duration || episode.chapters[currentChapterIndex].duration_seconds || 1;
+      const ratio = Math.min(0.999, Math.max(0, audio.currentTime / duration));
+      return Math.min(subtitleLines.length - 1, Math.floor(ratio * subtitleLines.length));
+    }
+
+    function updateSubtitle() {
+      const index = activeSubtitleIndex();
+      document.querySelectorAll(".subtitle-line").forEach((line) => {
+        line.classList.toggle("active", Number(line.dataset.index) === index);
+      });
+      nowLine.textContent = subtitleLines[index] || episode.chapters[currentChapterIndex].title;
+      const activeLine = subtitleScroll.querySelector(`.subtitle-line[data-index="${index}"]`);
+      if (activeLine) activeLine.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+
+    function renderDetails() {
+      const chapters = episode.chapters || [];
+      detailWhy.innerHTML = chapters
+        .map((chapter) => `<div><strong>${chapter.title}</strong><br>${chapter.why_it_matters || "暂无判断"}</div>`)
+        .join("");
+      const watchItems = [...new Set(chapters.flatMap((chapter) => chapter.watch_items || chapter.follow_up || []))].slice(0, 8);
+      detailWatch.innerHTML = watchItems.map((item) => `<div>${item}</div>`).join("") || "<div>暂无观察项</div>";
+      const sources = [...new Set(chapters.flatMap((chapter) => chapter.sources || []))];
+      detailSources.innerHTML = sources
+        .map((source) => `<a href="${source}" target="_blank" rel="noreferrer">${source}</a>`)
+        .join("") || "<div>暂无来源</div>";
+    }
+
+    function renderChapters() {
+      chaptersEl.innerHTML = episode.chapters.map((chapter, index) => `
+        <button class="chapter${index === currentChapterIndex ? " active" : ""}" data-index="${index}">
+          <strong>${chapter.title}</strong>
+          <span>${formatTime(chapter.start_seconds || 0)} · ${chapter.type}</span>
+        </button>
+      `).join("");
+      chaptersEl.querySelectorAll(".chapter").forEach((button) => {
+        button.addEventListener("click", () => loadChapter(Number(button.dataset.index), true));
+      });
+    }
+
+    function loadChapter(index, autoplay = false) {
+      currentChapterIndex = Math.max(0, Math.min(index, episode.chapters.length - 1));
+      const chapter = episode.chapters[currentChapterIndex];
+      chapterLabel.textContent = chapter.title;
+      audio.src = audioUrl(chapter);
+      audio.load();
+      audio.currentTime = 0;
+      progressBar.style.width = "0%";
+      currentTimeEl.textContent = "00:00";
+      totalTimeEl.textContent = formatTime(chapter.duration_seconds);
+      renderSubtitles(chapter);
+      renderChapters();
+      if (autoplay) audio.play().catch(() => { playButton.textContent = "▶"; });
+    }
+
+    function updateProgress() {
+      const duration = audio.duration || episode?.chapters[currentChapterIndex]?.duration_seconds || 0;
+      const ratio = duration ? audio.currentTime / duration : 0;
+      progressBar.style.width = `${Math.max(0, Math.min(100, ratio * 100))}%`;
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      totalTimeEl.textContent = formatTime(duration);
+      updateSubtitle();
+    }
+
+    async function loadEpisode() {
+      episode = await fetch("/api/episode/today", { cache: "no-store" }).then((response) => response.json());
+      titleEl.textContent = episode.title || "今日资讯电台";
+      dateEl.textContent = episode.date || "今日";
+      durationEl.textContent = `${formatTime(episode.duration_seconds)} · ${audioVersionLabel()}`;
+      renderTags();
+      renderDetails();
+      loadChapter(0, false);
+    }
+
+    async function askHost() {
+      const message = askInput.value.trim();
+      if (!message) return;
+      const userMessage = message;
+      pushMessage({ role: "user", text: userMessage });
+      const assistantMessage = pushMessage({ role: "assistant", text: "", voice_label: "电台主播" });
+      askInput.value = "";
+      localStorage.removeItem(draftKey);
+      askButton.disabled = true;
+      askInput.disabled = true;
+      askStatus.textContent = "主播开始回答...";
+      audio.pause();
+      replyAudio.pause();
+
+      try {
+        const response = await fetch("/api/ask/stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userMessage, voice_id: voiceSelect.value })
+        });
+        if (!response.ok || !response.body) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || "主播回答失败");
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let streamedText = "";
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          buffer = await parseSseChunk(buffer, async (event, data) => {
+            if (event === "status") {
+              askStatus.textContent = data.message;
+              return;
+            }
+            if (event === "delta") {
+              streamedText += data.delta;
+              updateStoredMessage(assistantMessage.id, { text: streamedText });
+              return;
+            }
+            if (event === "audio") {
+              updateStoredMessage(assistantMessage.id, {
+                text: data.text,
+                audio_url: data.audio_url,
+                generated_audio_at: data.generated_audio_at,
+                voice_label: data.voice.label
+              });
+              askStatus.textContent = `${data.voice.label}${data.voice.used_fallback ? " · 已自动切换备用音色" : ""} · 正在播放回答`;
+              replyAudio.src = `${data.audio_url}?v=${encodeURIComponent(data.generated_audio_at)}`;
+              replyAudio.load();
+              replyAudio.play().catch((error) => { askStatus.textContent = error.message; });
+            }
+            if (event === "audio_stream") {
+              updateStoredMessage(assistantMessage.id, {
+                text: data.text,
+                audio_url: data.audio_url,
+                generated_audio_at: data.generated_audio_at,
+                voice_label: data.voice.label
+              });
+              askStatus.textContent = `${data.voice.label}${data.voice.used_fallback ? " · 已自动切换备用音色" : ""} · 正在流式播放回答`;
+              replyAudio.src = `${data.stream_url}?v=${encodeURIComponent(data.generated_audio_at)}`;
+              replyAudio.load();
+              replyAudio.play().catch((error) => { askStatus.textContent = error.message; });
+            }
+            if (event === "error") throw new Error(data.error || "主播回答失败");
+          });
+        }
+        if (!streamedText.trim()) updateStoredMessage(assistantMessage.id, { text: "主播没有返回文本。" });
+      } catch (error) {
+        askStatus.textContent = error.message;
+        updateStoredMessage(assistantMessage.id, { text: `回答失败：${error.message}` });
+      } finally {
+        askButton.disabled = false;
+        askInput.disabled = false;
+        askInput.focus();
+      }
+    }
+
+    playButton.addEventListener("click", async () => {
+      if (!audio.src) return;
+      if (audio.paused) {
+        await audio.play();
+        return;
+      }
+      audio.pause();
+    });
+    prevButton.addEventListener("click", () => loadChapter(currentChapterIndex - 1, !audio.paused));
+    nextButton.addEventListener("click", () => loadChapter(currentChapterIndex + 1, !audio.paused));
+    detailsToggle.addEventListener("click", () => {
+      detailsPanel.classList.toggle("open");
+      detailsToggle.textContent = detailsPanel.classList.contains("open") ? "收起" : "详情";
+    });
+    askButton.addEventListener("click", askHost);
+    askInput.addEventListener("keydown", (event) => { if (event.key === "Enter") askHost(); });
+    askInput.addEventListener("input", () => { localStorage.setItem(draftKey, askInput.value); });
+    clearChatButton.addEventListener("click", () => {
+      conversation = [];
+      localStorage.removeItem(conversationKey);
+      renderConversation();
+      replyText.classList.remove("open");
+      askStatus.textContent = "会话已清空。";
+    });
+    replyAudio.addEventListener("play", () => setWaveActive(true));
+    replyAudio.addEventListener("pause", () => setWaveActive(!audio.paused));
+    replyAudio.addEventListener("ended", () => {
+      setWaveActive(!audio.paused);
+      askStatus.textContent = "回答播放完毕，可以继续追问。";
+    });
+    audio.addEventListener("play", () => {
+      playButton.textContent = "⏸";
+      setWaveActive(true);
+    });
+    audio.addEventListener("pause", () => {
+      playButton.textContent = "▶";
+      setWaveActive(!replyAudio.paused);
+    });
+    audio.addEventListener("timeupdate", updateProgress);
+    audio.addEventListener("loadedmetadata", updateProgress);
+    audio.addEventListener("ended", () => {
+      if (episode && currentChapterIndex < episode.chapters.length - 1) loadChapter(currentChapterIndex + 1, true);
+      else setWaveActive(false);
+    });
+
+    setupWaveform();
+    restoreConversation();
+    Promise.all([loadVoices(), loadEpisode()]).catch((error) => {
+      titleEl.textContent = "节目加载失败";
+      nowLine.textContent = error.message;
+    });
+  </script>
+</body>
+</html>

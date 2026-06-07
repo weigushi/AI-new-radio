@@ -1,0 +1,1 @@
+{"text":"","reference_id":"[set]","temperature":0.78,"top_p":0.72,"prosody":{"speed":0.94,"volume":0},"chunk_length":120,"format":"mp3","sample_rate":44100,"mp3_bitrate":128,"normalize":true,"latency":"balanced","backend":"s1"}
