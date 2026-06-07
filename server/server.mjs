@@ -365,6 +365,6 @@ createServer(async (req, res) => {
   } catch (error) {
     sendJson(res, 500, { error: error.message });
   }
-}).listen(port, "127.0.0.1", () => {
+}).listen(port, "0.0.0.0", () => {
   console.log(`Guo News Radio listening on http://localhost:${port}`);
 });
