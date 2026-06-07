@@ -6,7 +6,8 @@
   "scripts": {
     "episode": "node server/build-episode.mjs",
     "tts": "node server/build-audio.mjs",
-    "start": "node server/server.mjs"
+    "start": "node server/server.mjs",
+    "build": "echo \"No build step required\""
   },
   "dependencies": {
     "fish-audio": "^0.1.0"
