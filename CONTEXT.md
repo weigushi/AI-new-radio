@@ -9,3 +9,7 @@
 ### 启用信息源
 
 `enabled: true` 且当前或下一阶段 ingest 可以直接抓取的源。需要 API token、公司列表、股票代码列表或强噪声过滤的源，先保留在信息源目录里，但默认不启用。
+
+### 流式语音代理
+
+项目 API 层把 Fish Audio 的 TTS SSE 响应解析为浏览器可播放的 `audio/mpeg` 字节流。前端 `<audio>` 不直接消费 Fish 的 SSE。

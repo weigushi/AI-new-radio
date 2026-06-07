@@ -761,15 +761,15 @@
     }
 
     function audioUrl(chapter) {
-      const url = chapter.audio_url || `/audio/${episode.id}/${chapter.id}.mp3`;
-      const version = encodeURIComponent(episode.generated_audio_at || Date.now());
-      return `${url}${url.includes("?") ? "&" : "?"}v=${version}`;
+      const params = new URLSearchParams({
+        voice_id: voiceSelect.value,
+        v: episode.generated_audio_at || Date.now()
+      });
+      return `/api/chapters/${encodeURIComponent(chapter.id)}/stream?${params}`;
     }
 
     function audioVersionLabel() {
-      if (!episode.generated_audio_at) return "待生成音频";
-      const date = new Date(episode.generated_audio_at);
-      return `音频 ${date.toLocaleString("zh-CN", { hour12: false })}`;
+      return "Fish Audio 流式语音";
     }
 
     function safeJsonParse(value, fallback) {
@@ -1048,7 +1048,7 @@
         });
         if (!response.ok || !response.body) {
           const data = await response.json().catch(() => ({}));
-          throw new Error(data.error || "主播回答失败");
+          throw new Error(data.error || `主播接口不可用（HTTP ${response.status}）`);
         }
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -1092,6 +1092,9 @@
               replyAudio.load();
               replyAudio.play().catch((error) => { askStatus.textContent = error.message; });
             }
+            if (event === "done") {
+              askStatus.textContent = "主播回答完成，可以继续追问。";
+            }
             if (event === "error") throw new Error(data.error || "主播回答失败");
           });
         }
@@ -1109,7 +1112,10 @@
     playButton.addEventListener("click", async () => {
       if (!audio.src) return;
       if (audio.paused) {
-        await audio.play();
+        await audio.play().catch((error) => {
+          playButton.textContent = "▶";
+          nowLine.textContent = `音频播放失败：${error.message}`;
+        });
         return;
       }
       audio.pause();
@@ -1119,6 +1125,9 @@
     detailsToggle.addEventListener("click", () => {
       detailsPanel.classList.toggle("open");
       detailsToggle.textContent = detailsPanel.classList.contains("open") ? "收起" : "详情";
+    });
+    voiceSelect.addEventListener("change", () => {
+      if (episode) loadChapter(currentChapterIndex, false);
     });
     askButton.addEventListener("click", askHost);
     askInput.addEventListener("keydown", (event) => { if (event.key === "Enter") askHost(); });
@@ -1146,6 +1155,12 @@
     });
     audio.addEventListener("timeupdate", updateProgress);
     audio.addEventListener("loadedmetadata", updateProgress);
+    audio.addEventListener("error", () => {
+      const chapter = episode?.chapters?.[currentChapterIndex];
+      const path = chapter ? `/api/chapters/${chapter.id}/stream` : "当前音频流";
+      nowLine.textContent = `音频加载失败：请确认 ${path} 和 FISH_API_KEY 可用。`;
+      setWaveActive(false);
+    });
     audio.addEventListener("ended", () => {
       if (episode && currentChapterIndex < episode.chapters.length - 1) loadChapter(currentChapterIndex + 1, true);
       else setWaveActive(false);

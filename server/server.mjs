@@ -2,9 +2,11 @@ import { createServer } from "node:http";
 import { mkdir, readFile } from "node:fs/promises";
 import { dirname, extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
+import { chapterText } from "./chapter-tts-text.mjs";
 import { loadEnvFile } from "./env.mjs";
 import { answerAsRadioHost, streamAnswerAsRadioHost } from "./radio-host.mjs";
 import { createRealtimeTextQueue, streamRealtimeWithFishAudio, streamSegmentsWithFishAudio, streamWithFishAudio, synthesizeWithFishAudio } from "./tts/fish-audio.mjs";
+import { streamFishAudioToWritable } from "./tts/fish-audio-stream.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -41,6 +43,13 @@ async function episodeToday() {
 
 async function voiceConfig() {
   return readJson(join(root, "config", "voices.json"));
+}
+
+function selectedVoice(voices, voiceId) {
+  return voices.voices.find((voice) => voice.id === voiceId)
+    || voices.voices.find((voice) => voice.id === voices.default_voice_id)
+    || voices.voices[0]
+    || voices.fallback_voice;
 }
 
 async function readBody(req) {
@@ -216,9 +225,73 @@ async function handleReplyAudioStream(req, res, replyId) {
   }
 }
 
+async function handleChapterAudioStream(req, res, chapterId, url) {
+  const [episode, voices] = await Promise.all([episodeToday(), voiceConfig()]);
+  const chapter = episode.chapters.find((item) => item.id === chapterId);
+
+  if (!chapter) {
+    return sendJson(res, 404, { error: "Chapter not found" });
+  }
+
+  const voice = selectedVoice(voices, url.searchParams.get("voice_id"));
+  res.writeHead(200, {
+    "content-type": "audio/mpeg",
+    "cache-control": "no-store, no-transform",
+    "x-accel-buffering": "no"
+  });
+
+  try {
+    await streamFishAudioToWritable({
+      text: chapterText(chapter),
+      writable: res,
+      referenceId: voice.reference_id
+    });
+  } catch (error) {
+    console.warn(`Chapter audio stream failed for ${chapterId}: ${error.message}`);
+  } finally {
+    if (!res.destroyed && !res.writableEnded) res.end();
+  }
+}
+
+async function handleReplyTextAudioStream(req, res, url) {
+  const text = String(url.searchParams.get("text") || "").trim();
+  if (!text) {
+    return sendJson(res, 400, { error: "text is required" });
+  }
+
+  const voices = await voiceConfig();
+  const voice = selectedVoice(voices, url.searchParams.get("voice_id"));
+  res.writeHead(200, {
+    "content-type": "audio/mpeg",
+    "cache-control": "no-store, no-transform",
+    "x-accel-buffering": "no"
+  });
+
+  try {
+    await streamFishAudioToWritable({
+      text: `[calm][confident] ${text}`,
+      writable: res,
+      referenceId: voice.reference_id
+    });
+  } catch (error) {
+    console.warn(`Reply text audio stream failed: ${error.message}`);
+  } finally {
+    if (!res.destroyed && !res.writableEnded) res.end();
+  }
+}
+
 async function handleApi(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const replyStreamMatch = url.pathname.match(/^\/api\/replies\/([^/]+)\/stream$/);
+  const chapterStreamMatch = url.pathname.match(/^\/api\/chapters\/([^/]+)\/stream$/);
+
+  if (req.method === "GET" && chapterStreamMatch) {
+    return handleChapterAudioStream(req, res, chapterStreamMatch[1], url);
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/replies/stream") {
+    return handleReplyTextAudioStream(req, res, url);
+  }
 
   if (req.method === "GET" && replyStreamMatch) {
     return handleReplyAudioStream(req, res, replyStreamMatch[1]);
